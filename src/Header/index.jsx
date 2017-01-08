@@ -1,62 +1,80 @@
 import React, { Component, PropTypes } from 'react';
-import { split, isEmpty, map, values } from 'ramda';
+import { isEmpty, map, values, prop, equals } from 'ramda';
 
 import './style.css';
 
 class Header extends Component {
-    constructor() {
-        super();
+    static propTypes = {
+        title: PropTypes.string.isRequired,
+    }
+
+    constructor(props) {
+        super(props);
         this.state = {
-            title: null,
+            title: this.props.title,
             letters: {},
         }
+        this.handleChange = this.handleChange.bind(this);
     }
 
     componentWillMount() {
-        setInterval(this.blurOneLetter(), 300);
+     this.blurOneLetter();
     }
 
     blurOneLetter() {
-        const TITLE = 'Taskim';
-        let LETTERS;
+        const title = this.state.title;
+        let letters;
 
-        if (!isEmpty(this.state.letters)) {
-            LETTERS = this.state.letters;
+        const getLettersTitle = () => values(map(prop('letter'), this.state.letters))
+        const randomBlur = () => Math.floor(Math.random() * 15);
+        const randomIndex = Math.floor(Math.random() * title.length);
+
+        if (isEmpty(this.state.letters) || !equals(getLettersTitle(), title.split(''))) {
+            letters = {};
+            title.split('').forEach((letter, index) => {
+                letters[index] = { index, letter: letter, blur: 1 };
+            });
+        } else {
+            letters = this.state.letters;
         }
-        else {
-            LETTERS = {};
-            TITLE.split('').forEach((letter, index) => {
-                LETTERS[index] = { index, letter: letter, blur: 1 };
-            });    
-        }
-        
-        const randomBlur = () => Math.floor(Math.random() * 20);
-        const randomIndex = Math.floor(Math.random() * TITLE.length);
+
         this.setState({
             letters: Object.assign(
-                {},
-                LETTERS,
-                { [randomIndex]:{
-                    ...LETTERS[randomIndex],
-                    blur: randomBlur()
-                }}
+                {}, letters, { [randomIndex]:{ ...letters[randomIndex], blur: randomBlur() }}
             ),
         });
         setTimeout(() => this.blurOneLetter(), 100);
     }
 
+    handleChange(e, value) {
+        this.setState({ title: e.target.value});
+    }
+
     render() {;
-        const val = values(this.state.letters);
+        const letters = values(this.state.letters);
         return (
             <div className='hd-container'>
-                {map(letter =>
-                    <span
-                        key={letter.index}
-                        style={{ textShadow: `2px 2px ${letter.blur}px #FFF`, color: 'transparent', transition: 'text-shadow 0.25s ease' }}
-                    >
-                        {letter.letter}
-                    </span>
-                , val)}
+                <div>
+                    {map(letter =>
+                        <span
+                            key={letter.index}
+                            style={{
+                                textShadow: `2px 2px ${letter.blur}px #FFF`,
+                                color: 'transparent',
+                                transition: 'text-shadow 0.40s ease'
+                            }}
+                        >
+                            {letter.letter}
+                        </span>
+                    , letters)}
+                </div>
+                <input
+                    type='text'
+                    onChange={this.handleChange}
+                    value={this.state.title}
+                    className='hd-input'
+                />
+                <span className='hd-input-label'>↑ Type your name here ↑</span>
             </div>
         );
     }

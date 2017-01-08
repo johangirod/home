@@ -1,8 +1,28 @@
+@import url('https://fonts.googleapis.com/css?family=Kanit:100|Raleway:900');
+
 .hd-container {
-    height: 300px;
+    height: 200px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     font-size: 100px;
-    background-color: #222;
+    font-family: Raleway;
+}
+
+.hd-input {
+    background-color: transparent;
+    color: #e4e4e4;
+    border: none;
+    border-bottom: 1px solid #e4e4e4;
+    font-size: 12px;
+    width: 70%;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.hd-input-label {
+    color: #e4e4e4;
+    font-size: 10px;
+    font-family: Kanit;
 }
